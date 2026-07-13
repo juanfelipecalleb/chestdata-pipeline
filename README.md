@@ -4,6 +4,9 @@ Proyecto de práctica end-to-end de ingeniería de datos aplicado a un dataset c
 de imágenes médicas (NIH Chest X-ray sample), simulando un flujo real de estructuración, 
 validación, almacenamiento en la nube y consumo de datos para proyectos de IA.
 
+## Arquitectura
+Ver `docs/arquitectura.md` para el flujo completo del pipeline.
+
 ## Fase 1 — Ingesta y validación de datos 
 
 - **Fuente**: [NIH Chest X-ray Sample Dataset](https://www.kaggle.com/datasets/nih-chest-xrays/sample) (Kaggle)
