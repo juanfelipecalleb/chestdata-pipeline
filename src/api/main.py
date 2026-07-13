@@ -9,7 +9,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-PARQUET_PATH = Path("data/processed/chest_xray_validated.parquet")
+PARQUET_PATH = Path("data/processed/chest_xray_enriched.parquet")
 
 # Cargar los datos una sola vez al iniciar la API
 df = pd.read_parquet(PARQUET_PATH)
@@ -82,4 +82,18 @@ def get_stats():
         "age_avg": round(df["patient_age"].mean(), 1),
         "age_min": int(df["patient_age"].min()),
         "age_max": int(df["patient_age"].max()),
+    }
+
+@app.get("/records/{image_index}/diagnosis-codes")
+def get_diagnosis_codes(image_index: str):
+    record = df[df["image_index"] == image_index]
+
+    if record.empty:
+        raise HTTPException(status_code=404, detail=f"No se encontro el registro: {image_index}")
+
+    row = record.iloc[0]
+    return {
+        "image_index": image_index,
+        "finding_labels": list(row["finding_labels"]),
+        "icd10_codes": list(row["icd10_codes"])
     }

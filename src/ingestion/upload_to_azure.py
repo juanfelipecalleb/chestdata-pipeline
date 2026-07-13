@@ -59,5 +59,13 @@ def main():
 
     print("\nProceso completo. Todos los archivos fueron subidos a Azure Blob Storage.")
 
+    # 4. Subir Parquet enriquecido (con codigos ICD-10)
+
+    print("\n[4/4] Subiendo Parquet enriquecido...")
+
+    enriched_path = Path("data/processed/chest_xray_enriched.parquet")
+
+    upload_file(service_client, PROCESSED_CONTAINER, enriched_path, enriched_path.name)
+
 if __name__ == "__main__":
     main()

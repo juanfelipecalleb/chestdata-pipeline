@@ -146,6 +146,14 @@ GET /stats
 ```
 python src/enrichment/enrich_with_icd10.py
 ```
+
+### Cierre del ciclo de enriquecimiento
+El dataset enriquecido con codigos ICD-10 (`chest_xray_enriched.parquet`) esta:
+- Conectado a la API: `src/api/main.py` sirve este archivo (no el original sin enriquecer),
+  incluyendo el endpoint `GET /records/{image_index}/diagnosis-codes`.
+- Sincronizado en Azure: subido al contenedor `processed/` junto al Parquet validado,
+  via `src/ingestion/upload_to_azure.py`.
+  
 ## Fase 4 — Automatizacion con IA
 
 - **Caso de uso**: agente de validacion automatizada que revisa nuevos archivos de metadata
