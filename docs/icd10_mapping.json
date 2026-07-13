@@ -1,0 +1,58 @@
+{
+  "Atelectasis": {
+    "icd10_code": "J98.11",
+    "icd10_name": "Atelectasis"
+  },
+  "Cardiomegaly": {
+    "icd10_code": "I51.7",
+    "icd10_name": "Cardiomegaly"
+  },
+  "Consolidation": {
+    "icd10_code": null,
+    "icd10_name": null
+  },
+  "Edema": {
+    "icd10_code": "J81.0",
+    "icd10_name": "Acute pulmonary edema"
+  },
+  "Effusion": {
+    "icd10_code": "J91.0",
+    "icd10_name": "Malignant pleural effusion"
+  },
+  "Emphysema": {
+    "icd10_code": "J43.1",
+    "icd10_name": "Panlobular emphysema"
+  },
+  "Fibrosis": {
+    "icd10_code": "J84.10",
+    "icd10_name": "Pulmonary fibrosis, unspecified"
+  },
+  "Infiltration": {
+    "icd10_code": "R91.8",
+    "icd10_name": "Other nonspecific abnormal finding of lung field"
+  },
+  "Mass": {
+    "icd10_code": "R91.8",
+    "icd10_name": "Other nonspecific abnormal finding of lung field"
+  },
+  "No Finding": {
+    "icd10_code": null,
+    "icd10_name": "No aplica (sin hallazgo)"
+  },
+  "Nodule": {
+    "icd10_code": "R91.1",
+    "icd10_name": "Solitary pulmonary nodule"
+  },
+  "Pleural_Thickening": {
+    "icd10_code": "J92.9",
+    "icd10_name": "Pleural plaque without asbestos"
+  },
+  "Pneumonia": {
+    "icd10_code": "J18.9",
+    "icd10_name": "Pneumonia, unspecified organism"
+  },
+  "Pneumothorax": {
+    "icd10_code": "J93.81",
+    "icd10_name": "Chronic pneumothorax"
+  }
+}

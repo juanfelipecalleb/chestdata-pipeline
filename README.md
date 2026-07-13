@@ -116,9 +116,57 @@ GET /records?gender=M&limit=5
 GET /records/00011065_007.png
 GET /stats
 ```
+## Fase 3b — Enriquecimiento con API externa (ICD-10-CM)
+
+- **API consumida**: [Clinical Table Search Service (NLM)](https://clinicaltables.nlm.nih.gov/) 
+  para busqueda de codigos ICD-10-CM, gratuita y sin autenticacion.
+- **Objetivo**: mapear los diagnosticos en texto libre (`finding_labels`) a codigos 
+  estandar de la industria (ICD-10-CM), simulando la integracion con sistemas 
+  clinicos reales.
+- **Script**: `src/enrichment/enrich_with_icd10.py`
+- **Salida**: `data/processed/chest_xray_enriched.parquet` + mapeo documentado en 
+  `docs/icd10_mapping.json`
+
+### Decisiones tecnicas y limitaciones encontradas
+- La API por defecto solo indexa el campo `code`; fue necesario forzar el parametro 
+  `sf=code,name` para buscar tambien por texto de diagnostico.
+- Terminos clinicos sueltos (ej. "Nodule", "Mass", "Fibrosis") son ambiguos entre 
+  especialidades medicas (ej. "Fibrosis" mapeaba por defecto a fibrosis **hepatica** 
+  en vez de **pulmonar**). Se agrego contexto anatomico explicito en la busqueda 
+  (`SEARCH_CONTEXT_OVERRIDES`) para mejorar la precision clinica del mapeo.
+- **Resultado**: 13 de 14 diagnosticos mapeados correctamente a un codigo ICD-10-CM 
+  valido. `Consolidation` no encontro codigo especifico porque es un hallazgo 
+  radiologico **descriptivo**, no un diagnostico formal codificable por si solo en 
+  ICD-10 (normalmente requiere especificar la causa subyacente, ej. neumonia).
+
+### Reproducir
+```
+python src/enrichment/enrich_with_icd10.py
+```
+## Fase 4 — Automatizacion con IA
+
+- **Caso de uso**: agente de validacion automatizada que revisa nuevos archivos de metadata
+  clinica, ejecuta el esquema de calidad (Pydantic, mismo de la Fase 1), y genera un
+  resumen ejecutivo en lenguaje natural usando un LLM, listo para compartir con un
+  lider de proyecto no tecnico.
+- **Modelo usado**: GPT-4o-mini via **GitHub Models** (API gratuita, compatible con SDK de OpenAI)
+- **Seguridad**: autenticacion mediante Personal Access Token de tipo *fine-grained*, con el
+  minimo privilegio necesario (`Models: Read-only`), gestionado via variable de entorno (`.env`)
+- **Salida**: reporte en Markdown guardado automaticamente en `docs/validation_report_<timestamp>.md`
+
+### Automatizacion
+```
+python src/automation/validate_new_upload.py data/raw/sample_labels_subset.csv
+```
+
+### Ejemplo de flujo
+1. Llega un nuevo archivo CSV de metadata clinica (simula un nuevo lote de un hospital)
+2. El script valida cada fila contra el esquema de calidad definido
+3. Se genera un resumen ejecutivo con IA explicando el resultado en lenguaje simple
+4. El reporte queda documentado y trazable en `docs/`
 
 ## Proximas fases
 - [x] Fase 2 - Blob Storage
-- [x] Fase 2b - Azure SQL Database (Azure AD Authentication)
-- [x] Fase 3 - API de consumo (FastAPI) + documentacion
-- [ ] Fase 4 - Automatizacion con IA
+- [x] Fase 2b - Azure SQL Database
+- [x] Fase 3 - API de consumo (FastAPI)
+- [x] Fase 4 - Automatizacion con IA (GitHub Models)
