@@ -18,7 +18,7 @@ validación, almacenamiento en la nube y consumo de datos para proyectos de IA.
   - `Finding Labels` es multi-label (ej. `Mass|Nodule`), se transformó a lista de strings.
 - **Salida**: `data/processed/chest_xray_validated.parquet`
 
-## Estructura del proyecto
+
 ## Estructura del proyecto
 
 ```
@@ -26,10 +26,10 @@ chestdata-pipeline/
 ├── data/
 │   ├── raw/              # datos originales y subset (no versionado en git)
 │   └── processed/        # datos validados en Parquet
-├── src/
-│   ├── ingestion/         # scripts de descarga/armado de subset
+├├── src/
+│   ├── ingestion/         # scripts de descarga/armado de subset y carga a Azure
 │   ├── validation/        # esquemas y validacion de calidad
-│   └── api/                # (proximamente) API de consumo de datos
+│   └── api/                # API FastAPI de consumo de datos
 ├── notebooks/              # exploracion de datos
 └── docs/
 ```
@@ -62,7 +62,40 @@ az storage container create --name raw --account-name chestdatastorage2026
 az storage container create --name processed --account-name chestdatastorage2026
 az storage blob upload-batch --destination raw/images --source data/raw/images_subset
 ```
-## Próximas fases
-- [x] Fase 2 — Subida a Azure Blob Storage + Azure SQL
-- [ ] Fase 3 — API de consumo (FastAPI) + documentación
-- [ ] Fase 4 — Automatización con IA
+
+## Fase 3 — API de consumo de datos
+
+- **Framework**: FastAPI + Uvicorn
+- **Fuente de datos**: `data/processed/chest_xray_validated.parquet` (cargado en memoria al iniciar)
+- **Documentacion automatica**: Swagger UI disponible en `/docs` (OpenAPI generado por FastAPI)
+
+### Endpoints disponibles
+
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/` | Estado de la API y total de registros |
+| GET | `/records` | Lista registros, con filtros opcionales `gender`, `finding` y `limit` |
+| GET | `/records/{image_index}` | Detalle de un registro especifico por nombre de imagen |
+| GET | `/stats` | Estadisticas agregadas (distribucion por genero, vista, edad) |
+
+
+### Ejecutar localmente
+
+```
+uvicorn src.api.main:app --reload
+```
+
+Luego visitar `http://127.0.0.1:8000/docs` para la documentacion interactiva.
+
+### Ejemplos de uso
+
+```
+GET /records?gender=M&limit=5
+GET /records/00011065_007.png
+GET /stats
+```
+
+## Proximas fases
+- [x] Fase 2 - Subida a Azure Blob Storage
+- [x] Fase 3 - API de consumo (FastAPI) + documentacion
+- [ ] Fase 4 - Automatizacion con IA
