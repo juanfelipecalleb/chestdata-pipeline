@@ -26,11 +26,11 @@ chestdata-pipeline/
 ├── data/
 │   ├── raw/              # datos originales y subset (no versionado en git)
 │   └── processed/        # datos validados en Parquet
-├├── src/
-│   ├── ingestion/         # scripts de descarga/armado de subset y carga a Azure
-│   ├── validation/        # esquemas y validacion de calidad
-│   └── api/                # API FastAPI de consumo de datos
-├── notebooks/              # exploracion de datos
+├── src/
+│   ├── ingestion/        # scripts de carga: upload_to_azure.py, load_to_sql.py
+│   ├── validation/       # esquemas y validacion de calidad
+│   └── api/              # API FastAPI de consumo de datos
+├── notebooks/            # exploracion de datos
 └── docs/
 ```
 
@@ -61,6 +61,28 @@ az storage account create --name chestdatastorage2026 --resource-group rg-chestd
 az storage container create --name raw --account-name chestdatastorage2026
 az storage container create --name processed --account-name chestdatastorage2026
 az storage blob upload-batch --destination raw/images --source data/raw/images_subset
+```
+
+## Fase 2b — Base de datos relacional (Azure SQL)
+
+- **Servidor**: `chestdata-sqlserver-jf2026.database.windows.net` (region: Central US)
+- **Base de datos**: `chestdata-db` (modo Serverless, auto-pause a los 60 min de inactividad)
+- **Tabla**: `chest_xray_records` (image_index, finding_labels, patient_age, patient_gender, view_position)
+
+### Decisiones de seguridad
+- **Autenticacion**: Azure AD Authentication en vez de usuario/password SQL tradicional. 
+  La conexion desde Python usa `DefaultAzureCredential` (libreria `azure-identity`), 
+  sin necesidad de almacenar ni transmitir contrasenas.
+- **Firewall**: restringido a la IP publica del desarrollador (no abierto a internet).
+- **Cifrado en transito**: TLS 1.2+ forzado por defecto (`minimalTlsVersion: 1.2`).
+- **Nota de mejora para produccion**: en un entorno real (ej. proyecto CheXVision con datos 
+  clinicos sensibles), se recomendaria ademas usar Private Endpoint (para que la base no 
+  tenga IP publica en absoluto) y Azure Key Vault para gestion centralizada de secretos.
+
+### Automatizacion
+La carga de datos esta automatizada en `src/ingestion/load_to_sql.py`. Para reproducir:
+```
+python src/ingestion/load_to_sql.py
 ```
 
 ## Fase 3 — API de consumo de datos
@@ -96,6 +118,7 @@ GET /stats
 ```
 
 ## Proximas fases
-- [x] Fase 2 - Subida a Azure Blob Storage
+- [x] Fase 2 - Blob Storage
+- [x] Fase 2b - Azure SQL Database (Azure AD Authentication)
 - [x] Fase 3 - API de consumo (FastAPI) + documentacion
 - [ ] Fase 4 - Automatizacion con IA
