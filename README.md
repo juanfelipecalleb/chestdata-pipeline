@@ -45,6 +45,15 @@ chestdata-pipeline/
 - **Autenticacion**: manejo de credenciales via variables de entorno (`.env`, no versionado en git)
 - **Herramientas usadas**: Azure CLI para aprovisionamiento y carga de datos
 
+### Automatizacion
+La carga de datos a Azure Blob Storage esta automatizada en `src/ingestion/upload_to_azure.py`, 
+que usa el SDK oficial de Azure (`azure-storage-blob`) y credenciales gestionadas via variables 
+de entorno (`.env`, no versionado). Para reproducir:
+
+```
+python src/ingestion/upload_to_azure.py
+```
+
 ### Comandos clave utilizados
 ```
 az group create --name rg-chestdata-pipeline --location eastus
