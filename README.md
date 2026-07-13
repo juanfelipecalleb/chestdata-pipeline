@@ -19,16 +19,20 @@ validación, almacenamiento en la nube y consumo de datos para proyectos de IA.
 - **Salida**: `data/processed/chest_xray_validated.parquet`
 
 ## Estructura del proyecto
+## Estructura del proyecto
+
+```
 chestdata-pipeline/
 ├── data/
 │   ├── raw/              # datos originales y subset (no versionado en git)
 │   └── processed/        # datos validados en Parquet
 ├── src/
 │   ├── ingestion/         # scripts de descarga/armado de subset
-│   ├── validation/        # esquemas y validación de calidad
-│   └── api/                # (próximamente) API de consumo de datos
-├── notebooks/              # exploración de datos
+│   ├── validation/        # esquemas y validacion de calidad
+│   └── api/                # (proximamente) API de consumo de datos
+├── notebooks/              # exploracion de datos
 └── docs/
+```
 
 ## Fase 2 — Ingenieria de datos en Azure
 
